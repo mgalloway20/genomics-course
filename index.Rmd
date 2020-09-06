@@ -3,14 +3,19 @@ title: "index"
 author: "Marlee_Galloway"
 date: "9/5/2020"
 output: html_document
+bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Link to Lab1
+## Links to Labs
 
-[lab1](lab1_MarleeGalloway.html)
+[Lab1](lab1_MarleeGalloway.html)
 
+[Lab2](lab2)
 
+Application written in R [@RCoreTeam] using the Shiny framework [@Chang2015].
+
+# REFERENCES
