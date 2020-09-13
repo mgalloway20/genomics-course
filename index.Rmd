@@ -3,7 +3,6 @@ title: "index"
 author: "Marlee_Galloway"
 date: "9/5/2020"
 output: html_document
-bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -14,8 +13,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [Lab1](lab1_MarleeGalloway.html)
 
-[Lab2](lab2)
+[Lab2](lab2_MarleeGalloway.html)
 
-Application written in R [@RCoreTeam] using the Shiny framework [@Chang2015].
+[Lab3A](lab3A_MarleeGalloway.html)
 
-# REFERENCES
+[Lab3B](lab3B_MarleeGalloway.html)
+
+
+
