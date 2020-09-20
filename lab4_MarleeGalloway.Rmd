@@ -1,0 +1,209 @@
+---
+title: "Lab4"
+author: "Marlee_Galloway"
+date: "9/14/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+report_03_11_2020 <-   read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-11-2020.csv")) %>%
+  rename(Country_Region = "Country/Region", Province_State = "Province/State")
+
+```
+
+```{r}
+str(report_03_11_2020)
+```
+
+#Interactive data tables with the DT Package
+
+```{r}
+library(DT)
+datatable(report_03_11_2020)
+```
+
+###Exercises Part 1
+
+#1. The format of the daily reports has changed over time. What are the differences between 3/13/2020, the Friday before spring break 2020 and yesterday 6 months later on 9/13/2020? Load the files into R and use str() and View() (or in the top right corner click on Environment and then the data frame.). Note the in the more recent dates they have changed the column headers so that it is no longer necessary to rename Province_State and Country_Region.
+
+```{r}
+report_03_13_2020 <-   read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-13-2020.csv")) %>%
+  rename(Country_Region = "Country/Region", Province_State = "Province/State")
+```
+
+```{r}
+report_09_13_2020 <-   read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/09-13-2020.csv"))
+```
+
+```{r}
+str(report_03_13_2020)
+```
+
+```{r}
+view(report_03_13_2020)
+```
+
+```{r}
+str(report_09_13_2020)
+```
+
+```{r}
+view(report_09_13_2020)
+```
+
+#Key differences between these files:
+#*The report from 3-13-2020 contains 280 entries and 8 columns, while the report from 9-13-2020 cotains 9,354 entries and 14 columns.
+#*The 9-13-2020 report also contains colums that are not in earlier reports, including columns for active, combined key, incedence rate, and case-fatality ratio.
+
+#2. Many countries have multiple entries representing different regions (e.g. counties and states). To get the counts for a country we need to summarise the data. Use group_by() and summarize() to make a data frame (tibble) with total counts for each country.
+
+```{r}
+report_09_13_2020 %>%
+  group_by(Country_Region) %>%
+  summarize(Deaths = sum(Deaths, na.rm = TRUE))
+```
+
+#3. To get counts for confirmed cases per U.S state use filter() to select US and group_by and summarize as above.
+
+```{r}
+filter(report_09_13_2020, Country_Region == "US") %>% 
+  group_by(Province_State) %>%
+  summarize(Confirmed = sum(Confirmed, na.rm = TRUE))
+```
+
+#4. It will be difficult to make simple graphs with the data from all countries in the world or even the US states. Use arrange_by() and slice() to get just the top 10 countries for Deaths.
+
+```{r}
+  top_10_countries_deaths <- arrange(report_09_13_2020, Country_Region) %>% 
+  slice_max(Deaths, n=10)
+```
+
+###Exercises Part 2
+
+#Make plots using geom_point() of the 10 countries with the confirmed cases and deaths (two separate graphs) on 3/12/2020 and 9/12/2020.
+
+#03/12/2020:
+
+```{r}
+report_03_12_2020 <-   read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-12-2020.csv")) %>%
+  rename(Country_Region = "Country/Region", Province_State = "Province/State")
+```
+
+```{r}
+top_10_countries_confirmed <- arrange(report_03_12_2020, Country_Region) %>% 
+  slice_max(Confirmed, n=10)
+```
+
+```{r}
+ggplot(data = top_10_countries_confirmed, aes(x = Confirmed, y = Country_Region)) +
+  geom_point(alpha = 1, color = "red")
+```
+
+```{r}
+top_10_countries_deaths <- arrange(report_03_12_2020, Country_Region) %>% 
+  slice_max(Deaths, n=10)
+```
+
+```{r}
+ggplot(data = top_10_countries_deaths, aes(x = Deaths, y = Country_Region)) +
+  geom_point(alpha = 1, color = "red")
+```
+
+#9/12/2020:
+
+```{r}
+report_09_12_2020 <-   read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/09-12-2020.csv"))
+```
+
+```{r}
+top_10_countries_confirmed <- arrange(report_09_12_2020, Country_Region) %>% 
+  slice_max(Confirmed, n=10)
+```
+
+```{r}
+ggplot(data = top_10_countries_confirmed, aes(x = Confirmed, y = Country_Region)) +
+  geom_point(alpha = 1, color = "red")
+```
+
+```{r}
+top_10_countries_deaths <- arrange(report_09_12_2020, Country_Region) %>% 
+  slice_max(Deaths, n=10)
+```
+
+```{r}
+ggplot(data = top_10_countries_deaths, aes(x = Deaths, y = Country_Region)) +
+  geom_point(alpha = 1, color = "red")
+```
+
+#Make using geom_bar of the 10 states with the most confirmed cases and deaths (two separate graphs) on 3/12/2020 and 9/12/2020.
+
+#3/12/2020:
+
+```{r}
+top_10_states_confirmed <- report_03_12_2020 %>% 
+    filter(Country_Region =="US") %>% 
+    group_by(Province_State) %>% 
+    summarize(confirmed_cases = sum(Confirmed)) %>% 
+    arrange(desc(confirmed_cases)) %>% 
+    slice(1:10)
+```
+
+```{r}
+ggplot(data = top_10_states_confirmed, aes(x = confirmed_cases, y = Province_State)) +
+geom_bar(stat = 'identity', color = "red")
+```
+
+```{r}
+top_10_states_deaths <- report_03_12_2020 %>% 
+  filter(Country_Region == "US") %>% 
+  group_by(Province_State) %>% 
+  summarize(total_deaths = sum(Deaths)) %>% 
+  arrange(desc(total_deaths)) %>% 
+  slice(1:10)
+```
+
+```{r}
+ggplot(data = top_10_states_deaths, aes(x = total_deaths, y = Province_State)) +
+  geom_bar(stat = 'identity', color = "red")
+```
+
+#9/12/2020:
+
+```{r}
+top_10_states_confirmed2 <- report_09_12_2020 %>% 
+    filter(Country_Region =="US") %>% 
+    group_by(Province_State) %>% 
+    summarize(confirmed_cases = sum(Confirmed)) %>% 
+    arrange(desc(confirmed_cases)) %>% 
+    slice(1:10)
+```
+
+```{r}
+ggplot(data = top_10_states_confirmed2, aes(x = confirmed_cases, y = Province_State)) +
+geom_bar(stat = 'identity', color = "red")
+```
+
+```{r}
+top_10_states_deaths2 <- report_09_12_2020 %>% 
+  filter(Country_Region == "US") %>% 
+  group_by(Province_State) %>% 
+  summarize(total_deaths = sum(Deaths)) %>% 
+  arrange(desc(total_deaths)) %>% 
+  slice(1:10)
+```
+
+```{r}
+ggplot(data = top_10_states_deaths, aes(x = total_deaths, y = Province_State)) +
+  geom_bar(stat = 'identity', color = "red")
+```
+
