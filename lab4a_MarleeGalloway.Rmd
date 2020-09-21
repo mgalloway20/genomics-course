@@ -15,6 +15,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
+```{r}
+surveys_complete <- read_csv("data/surveys_complete.csv")
+```
+
 ###Plotting with ggplot2
 
 #ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) +  <GEOM_FUNCTION>()
@@ -56,8 +60,8 @@ surveys_plot +
   geom_point()
 
 # This will not add the new layer and will return an error message
-surveys_plot
-  + geom_point()
+#surveys_plot
+#  + geom_point()
 
 ```
 
@@ -172,5 +176,214 @@ ggplot(data = surveys_complete, mapping = aes(x = species_id, y = hindfoot_lengt
     geom_boxplot()+
   geom_jitter(alpha = 0.1, aes(color = plot_id))
 ```
+
+###Plotting Time Series Data
+
+#Number of counts per year for each genus:
+
+```{r}
+yearly_counts <- surveys_complete %>%
+  count(year, genus)
+```
+
+#Timelapse data as a line plot:
+
+```{r}
+ggplot(data = yearly_counts, aes(x = year, y = n)) +
+     geom_line()
+```
+
+#Tell ggplot to draw a line for each genus:
+
+```{r}
+ggplot(data = yearly_counts, aes(x = year, y = n, group = genus)) +
+    geom_line()
+```
+
+#Use color to automatically group data:
+
+```{r}
+ggplot(data = yearly_counts, aes(x = year, y = n, color = genus)) +
+    geom_line()
+```
+
+###Integrating the pipe operator with ggplot2
+
+#Use pipe operator to pass the data argument to the ggplot function:
+
+```{r}
+yearly_counts %>% 
+    ggplot(mapping = aes(x = year, y = n, color = genus)) +
+    geom_line()
+```
+
+#Link data manipulation with data visualization:
+
+```{r}
+yearly_counts_graph <- surveys_complete %>%
+    count(year, genus) %>% 
+    ggplot(mapping = aes(x = year, y = n, color = genus)) +
+    geom_line()
+
+yearly_counts_graph
+```
+
+###Faceting
+
+#Split one plot into multiple to make a time series plot for each species:
+
+```{r}
+ggplot(data = yearly_counts, aes(x = year, y = n)) +
+    geom_line() +
+    facet_wrap(facets = vars(genus))
+```
+
+#Split line in each plot by sex:
+
+```{r}
+ yearly_sex_counts <- surveys_complete %>%
+                      count(year, genus, sex)
+```
+
+#Split using color:
+
+```{r}
+ggplot(data = yearly_sex_counts, mapping = aes(x = year, y = n, color = sex)) +
+  geom_line() +
+  facet_wrap(facets =  vars(genus))
+```
+
+#Facet by sex and genus:
+
+```{r}
+ggplot(data = yearly_sex_counts, 
+       mapping = aes(x = year, y = n, color = sex)) +
+  geom_line() +
+  facet_grid(rows = vars(sex), cols =  vars(genus))
+```
+
+#Organize panels by rows or columns:
+
+```{r}
+# One column, facet by rows
+ggplot(data = yearly_sex_counts, 
+       mapping = aes(x = year, y = n, color = sex)) +
+  geom_line() +
+  facet_grid(rows = vars(genus))
+```
+
+```{r}
+# One row, facet by column
+ggplot(data = yearly_sex_counts, 
+       mapping = aes(x = year, y = n, color = sex)) +
+  geom_line() +
+  facet_grid(cols = vars(genus))
+```
+
+###ggplot2 Themes
+
+#Use theme to customize the graph:
+
+```{r}
+ ggplot(data = yearly_sex_counts, 
+        mapping = aes(x = year, y = n, color = sex)) +
+     geom_line() +
+     facet_wrap(vars(genus)) +
+     theme_bw()
+```
+
+###CHALLENGE Q4
+
+#Create a plot that depicts how the average weight of each species changes through the years.
+
+```{r}
+yearly_weight <- surveys_complete %>%
+                group_by(year, species_id) %>%
+                 summarize(avg_weight = mean(weight))
+```
+
+```{r}
+ggplot(data = yearly_weight, mapping = aes(x=year, y=avg_weight)) +
+   geom_line() +
+   facet_wrap(vars(species_id)) +
+   theme_bw()
+```
+
+###Customization
+
+#Name axes and add title to figure:
+
+```{r}
+ggplot(data = yearly_sex_counts, aes(x = year, y = n, color = sex)) +
+    geom_line() +
+    facet_wrap(vars(genus)) +
+    labs(title = "Observed genera through time",
+         x = "Year of observation",
+         y = "Number of individuals") +
+    theme_bw()
+```
+
+#Increase font size with the theme() function:
+
+```{r}
+ggplot(data = yearly_sex_counts, mapping = aes(x = year, y = n, color = sex)) +
+    geom_line() +
+    facet_wrap(vars(genus)) +
+    labs(title = "Observed genera through time",
+        x = "Year of observation",
+        y = "Number of individuals") +
+    theme_bw() +
+    theme(text=element_text(size = 16))
+```
+
+#Change orientation of the labels:
+
+```{r}
+ggplot(data = yearly_sex_counts, mapping = aes(x = year, y = n, color = sex)) +
+    geom_line() +
+    facet_wrap(vars(genus)) +
+    labs(title = "Observed genera through time",
+        x = "Year of observation",
+        y = "Number of individuals") +
+    theme_bw() +
+    theme(axis.text.x = element_text(colour = "grey20", size = 12, angle = 90, hjust = 0.5, vjust = 0.5),
+                        axis.text.y = element_text(colour = "grey20", size = 12),
+                        strip.text = element_text(face = "italic"),
+                        text = element_text(size = 16))
+```
+
+#Save changes as an object to apply to other plots:
+
+```{r}
+grey_theme <- theme(axis.text.x = element_text(colour="grey20", size = 12, 
+                                               angle = 90, hjust = 0.5, 
+                                               vjust = 0.5),
+                    axis.text.y = element_text(colour = "grey20", size = 12),
+                    text=element_text(size = 16))
+
+ggplot(surveys_complete, aes(x = species_id, y = hindfoot_length)) +
+    geom_boxplot() +
+    grey_theme
+```
+
+###CHALLENGE Q5
+
+#See if you can change the thickness of the lines.
+#Can you find a way to change the name of the legend? What about its labels?
+#Try using a different color palette
+
+```{r}
+ggplot(surveys_complete, aes(x = species_id, y = hindfoot_length, color = species_id)) +
+    geom_boxplot() +
+    grey_theme %>% 
+   labs(title = "Hindfoot Length of Each Species",
+         x = "Species",
+         y = "Hindfoot Length") +
+  theme(legend.position = "bottom")
+```
+
+
+
+
 
 
