@@ -3,9 +3,9 @@ title: "Lab6"
 author: "Marlee_Galloway"
 date: "9/29/2020"
 output: html_document
+bibliography: data/references.bib 
 editor_options: 
   chunk_output_type: console
-  bibliography: data/references.bib
 ---
 
 ```{r setup, include=FALSE}
