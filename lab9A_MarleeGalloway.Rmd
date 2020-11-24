@@ -1,0 +1,151 @@
+---
+title: "Lab9A"
+author: "Marlee Galloway"
+date: "10/28/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## EXERCISE: Modify examples from Lab 9A
+
+## Conditional statements with if-else
+
+```{r}
+x <- runif(1, 0, 10)  
+if(x > 5) {
+        y <- 10
+} else {
+        y <- 0
+}
+
+```
+
+## for Loops
+
+```{r}
+for(m in 5:15) {
+        print(m)
+}
+```
+
+# Using a vector for Loop:
+
+```{r}
+x <- c("e", "f", "g", "h")
+for(j in 1:4) {
+        ## Print out each element of 'x'
+        print(x[j])  
+}
+```
+
+# Use seq_along() to generate an integer sequence based on the length of an object:
+
+```{r}
+for(j in seq_along(x)) {   
+        print(x[j])
+}
+```
+
+# Without an index type variable:
+
+```{r}
+for(letter in x) {
+        print(letter)
+}
+```
+
+# Curly brackets not needed for one line loops:
+
+```{r}
+for(m in 1:4) print(x[m])
+```
+
+## Nested for Loops
+
+```{r}
+x <- matrix(1:5, 10, 15)
+for(m in seq_len(nrow(x))) {
+        for(j in seq_len(ncol(x))) {
+                print(x[m, j])
+        }   
+}
+```
+
+# While Loops:
+
+```{r}
+count <- 0
+while(count < 5) {
+        print(count)
+        count <- count + 1
+}
+```
+
+# With more than one condition:
+
+```{r}
+k <- 2
+set.seed(1)
+while(k >= 1 && k <= 5) {
+        coin <- rbinom(1, 1, 0.5)
+        
+        if(coin == 1) {  ## random walk
+                k <- k + 1
+        } else {
+                k <- k - 1
+        } 
+}
+print(k)
+```
+
+## Functions
+
+# Simple function with no argument:
+
+```{r}
+f <- function()
+  class(f)
+f()
+```
+
+# Create a function with a non-trivial function body:
+
+```{r}
+f <- function() {
+         cat("Amherst, MA\n")
+}
+f()
+```
+
+# Function arguments can be inserted here to determine how many times the argument is printed to the console etc.
+
+```{r}
+ f <- function(num) {
+         for(i in seq_len(num)) {
+                 cat("Amherst, MA\n")
+         }}
+ f(4)
+```
+
+# This funstion returns the total number of characters printed to the console:
+
+```{r}
+f <- function(num) {
+         hello <- "Amherst, MA\n"
+         for(i in seq_len(num)) {
+                 cat(hello)
+         }
+         chars <- nchar(hello) * num
+         chars
+}
+genomics <- f(2)
+
+print(genomics)
+
+```
+
