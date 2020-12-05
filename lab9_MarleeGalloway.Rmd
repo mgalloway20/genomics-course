@@ -1,0 +1,11 @@
+---
+title: "Lab 9"
+author: "Marlee Galloway"
+date: "11/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
